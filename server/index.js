@@ -4,10 +4,11 @@ var cors = require('cors')
 require('dotenv').config({ path: '../.env' });
 const dbConfig = require('./config/database')
 const app = express()
-const userRoutes = require('./routes/userRoutes')
-
 app.use(cors())
 app.use(express.json())
+
+const userRoutes = require('./routes/userRoutes')
+
 app.use('/app/users', userRoutes)
 
 

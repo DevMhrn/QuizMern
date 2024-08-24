@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/userModels');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
@@ -55,9 +55,12 @@ router.post('/login', async (req, res) => {
                 message: 'Invalid Password'
             });
         }
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET );
+        
         return res.status(200).json({
             success: true,
-            message: 'User logged in successfully'
+            message: 'User logged in successfully',
+            authToken:token,
         });
     }
     catch (error) {
