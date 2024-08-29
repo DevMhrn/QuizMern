@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/userModels');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const authMiddleware = require('../middlewares/authMiddleware');
 require('dotenv').config({ path: '../.env' });
 
 router.post('/register', async (req, res) => {
@@ -12,6 +13,7 @@ router.post('/register', async (req, res) => {
         const user = await User.findOne({ email: email });
         console.log(user);
         if(user){
+            console.log("register");
             console.log('User already exists');
             return res.status(400).json({
                 success: false,
@@ -43,6 +45,7 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ email:email });
         console.log(user);
         if(!user){
+            console.log("login");
             return res.status(404).json({
                 success: false,
                 message: 'User not found, Register to continue'
@@ -72,15 +75,18 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/profile', async (req, res) => {   
+router.get('/profile',authMiddleware, async (req, res) => {   
+    const { email, password } = req.body;
     try{
-        const user = await User.findById(req.body.UserId).select('-password');
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
+        const user = await User.findOne({email: email}).select('-password');
+        console.log(user);
+        // if (!user) {
+        //     console.log("profile");
+        //     return res.status(404).json({
+        //         success: false,
+        //         message: 'User not found'
+        //     });
+        // }
         return res.status(200).json({
             success: true,
             user: user,
